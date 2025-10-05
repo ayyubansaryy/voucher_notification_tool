@@ -64,8 +64,25 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
         if match:
             order, contact = match.groups()
             return f"{order}\u00A0\u00A0\u00A0{contact}"
-        return line
+        return line\
+    
+    #0.1 Split date into two segmenst (e.g. 20 january --> ["20", "January"])
+    start_a = start.split()[0].lstrip("0")
+    start_b = start.split()[1].lstrip("0")
+    end_a = end.split()[0].lstrip("0")
+    end_b = end.split()[1].lstrip("0")
+    #0.2 prepare start day extension
+    if start_a in ("1", "31", "21"): start_date = f"{start_a}st {start_b}"
+    elif start_a in ("2", "22"): start_date = f"{start_a}nd {start_b}"
+    elif start_a in ("3", "23"): start_date = f"{start_a}rd {start_b}"
+    else: start_date = f"{start_a}th {start_b}"
+    #0.3 prepare end day extension
+    if end_a in ("1", "31", "21"): end_date = f"{end_a}st {end_b}"
+    elif end_a in ("2", "22") : end_date = f"{end_a}nd {end_b}"
+    elif end_a in ("3", "23"): end_date = f"{end_a}rd {end_b}"
+    else: end_date = f"{end_a}th {end_b}"
 
+    # Build main notification text that users will receive
     for serial, (amount, group) in enumerate(df.groupby("Voucher"), start=1):
         code_str = f"SORRY{int(amount)}"
         mov = int(amount) + 49
@@ -78,7 +95,7 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
             *order_contact_lines,
             f"Use coupon {code_str} to get {int(amount)} taka off",
             f"Minimum order: {mov} taka",
-            f"Validity: {start} to {end}",
+            f"Validity: {start_date} to {end_date}",
             "Not applicable for Flat discount-providing restaurants\n",
         ]
         segments.append("\n".join(lines))
@@ -143,8 +160,8 @@ def read_input_data() -> pd.DataFrame:
         return df
 
 #### Main Program
+boot_msg()
 def main():
-    boot_msg()
     while True:
         df = read_input_data()
         if df is None:
@@ -189,7 +206,7 @@ def main():
                 print(f"{row['Order No']} 0{row['Contact']} {int(row['Voucher'])}")
             
             try:
-                choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit").strip().lower()
+                choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n").strip().lower()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
@@ -240,11 +257,11 @@ def main():
             exit()
         if choice == "":
             os.system("cls" if os.name == "nt" else "clear")
-            print("\n🟢 Successfully Restarted")
+            restart_msg()
             return main()
         else:
             os.system("cls" if os.name == "nt" else "clear")
-            print("\n🟢 Successfully Restarted")
+            restart_msg()
             return main()
 
 if __name__ == "__main__":
