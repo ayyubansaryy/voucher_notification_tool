@@ -8,10 +8,10 @@ from tkcalendar import Calendar
 from reportlab.lib.pagesizes import A4
 import re
 
-def boot_message():
+def boot_msg():
     print("\n══════════════════════════════════════════════════════\nVoucher Notification Text Tool\n══════════════════════════════════════════════════════\nv0.7 (developed by: FEL-89242)\nDefault output location: Desktop\n══════════════════════════════════════════════════════\nPaste data below (with headers) & press 'Enter' twice:\n")
 
-def restart_message():
+def restart_msg():
     os.system("cls" if os.name == "nt" else "clear")
     print("\n🟢 Successfully Restarted\n\nPaste data below (with headers) & press 'Enter' twice:\n══════════════════════════════════════════════════════\n")
 
@@ -100,16 +100,17 @@ def read_input_data() -> pd.DataFrame:
         raw = "\n".join(lines).strip()
         if not raw:
             print("🛑 ERROR! No data found!\n")
+            
             try:
                 choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
             if choice == "":
-                restart_message()
+                restart_msg()
                 continue
             else:
-                restart_message()
+                restart_msg()
                 continue
 
         # Detect header
@@ -127,10 +128,10 @@ def read_input_data() -> pd.DataFrame:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
             if choice == "":
-                restart_message()
+                restart_msg()
                 continue
             else:
-                restart_message()
+                restart_msg()
                 continue
 
         # Exclude Voucher Given == yes or withdrawn
@@ -143,7 +144,7 @@ def read_input_data() -> pd.DataFrame:
 
 #### Main Program
 def main():
-    boot_message()
+    boot_msg()
     while True:
         df = read_input_data()
         if df is None:
@@ -154,10 +155,10 @@ def main():
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
             if choice == "":
-                restart_message()
+                restart_msg()
                 continue
             else:
-                restart_message()
+                restart_msg()
                 continue
 
         # Check for missing voucher values
@@ -173,10 +174,10 @@ def main():
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
             if choice == "":
-                restart_message()
+                restart_msg()
                 continue
             else:
-                restart_message()
+                restart_msg()
                 continue
 
         # Check for duplicate contacts
@@ -187,7 +188,6 @@ def main():
             for _, row in duplicate_contacts.iterrows():
                 print(f"{row['Order No']} 0{row['Contact']} {int(row['Voucher'])}")
             
-            
             try:
                 choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit").strip().lower()
             except EOFError:
@@ -196,10 +196,10 @@ def main():
             if choice == "c":
                 print("\n ✌ Allowed duplicates...")
             elif choice == "":
-                restart_message()
+                restart_msg()
                 continue
             else:
-                restart_message()
+                restart_msg()
                 continue
 
         print("\n🔘 Set validity from the pop-up calendar...")
@@ -228,6 +228,7 @@ def main():
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_text)
 
+    # Successfull file generation reminder
     print("\n:::::: ✨  Notepad text file generated  ╰┈➤  📁", output_path)
     time.sleep(2)
 
