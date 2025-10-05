@@ -206,7 +206,7 @@ def main():
                 print(f"{row['Order No']} 0{row['Contact']} {int(row['Voucher'])}")
             
             try:
-                choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n").strip().lower()
+                choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip().lower()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
