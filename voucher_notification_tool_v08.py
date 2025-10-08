@@ -1,4 +1,4 @@
-    # Compilation command: pyinstaller --onefile "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v08.py"
+    # Compilation command: pyinstaller --onefile --distpath . "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v08.py"
 
 import os
 import time
