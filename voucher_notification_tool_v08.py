@@ -10,13 +10,21 @@ from tkcalendar import Calendar
 from reportlab.lib.pagesizes import A4
 import re
 
+version = "0.8"
 
 def boot_msg():
-    print("\n══════════════════════════════════════════════════════\nVoucher Notification Text Tool\n══════════════════════════════════════════════════════\nv0.7 (developed by: FEL-89242)\nDefault output location: Desktop\n══════════════════════════════════════════════════════\n")
+    print("\n" + "═" * 57)
+    print("🟢  VOUCHER NOTIFICATION TEXT TOOL 🟢".center(57))
+    print("-" * 57)
+    print(f"Version: {version}".center(57))
+    print("FEL-89242".center(58))
+    print("-" * 57)
+    print("╰┈➤  Default output location: Desktop".center(57))
+    print("═" * 57 + "\n")
 
 def restart_msg():
     os.system("cls" if os.name == "nt" else "clear")
-    print("\n🟢 Successfully Restarted\n\nPaste data below (with headers) & press 'Enter' twice:\n══════════════════════════════════════════════════════\n")
+    print("\n🟢 Restarted\n\nPaste data below (with headers) & press 'Enter' twice:" + "\n" + "-" * 57 + "\n")
 
 def closing():
     print("\n👋 Closing in 5 seconds...")
@@ -167,20 +175,20 @@ def read_input_data() -> pd.DataFrame:
 #### Main Program
 boot_msg()
 
-choice = input("🟢 Set Voucher Session (M for Morning or E for Evening) : ").strip().lower()
+choice = input("🔘 Set voucher Ssssion (M for Morning or E for Evening) : ").strip().lower()
 if choice == "m" :
     user_session = "Morning"
-    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+    print(f"\n:::::: Voucher session has been set to '{user_session}'\n")
 
 elif choice == "e" :
     user_session = "Evening"
-    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+    print(f"\n:::::: Voucher session has been set to '{user_session}'\n")
 
 else: 
     user_session = "Default (Evening)"
-    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+    print(f"\n:::::: Voucher session has been set to '{user_session}'\n")
 
-print("Paste data below (with headers) & press 'Enter' twice:\n══════════════════════════════════════════════════════\n")
+print("Paste data below (with headers) & press 'Enter' twice:" + "\n" + "-" * 57 + "\n")
 
 def main():
     while True:
@@ -249,7 +257,7 @@ def main():
     # Sort by Voucher
     df = df.sort_values(by="Voucher")
 
-    # Fix contact numbers
+    # Fix contact numbers (add "0" in the front)
     df["Contact"] = df["Contact"].apply(lambda x: x if len(x) != 10 else "0" + x)
 
     # Get validity dates
