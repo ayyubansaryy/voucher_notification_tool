@@ -1,3 +1,5 @@
+    # Compilation command: pyinstaller --onefile "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v08.py"
+
 import os
 import time
 from io import StringIO
@@ -7,6 +9,7 @@ import pandas as pd
 from tkcalendar import Calendar
 from reportlab.lib.pagesizes import A4
 import re
+
 
 def boot_msg():
     print("\n══════════════════════════════════════════════════════\nVoucher Notification Text Tool\n══════════════════════════════════════════════════════\nv0.7 (developed by: FEL-89242)\nDefault output location: Desktop\n══════════════════════════════════════════════════════\n")
