@@ -9,7 +9,7 @@ from reportlab.lib.pagesizes import A4
 import re
 
 def boot_msg():
-    print("\n══════════════════════════════════════════════════════\nVoucher Notification Text Tool\n══════════════════════════════════════════════════════\nv0.7 (developed by: FEL-89242)\nDefault output location: Desktop\n══════════════════════════════════════════════════════\nPaste data below (with headers) & press 'Enter' twice:\n")
+    print("\n══════════════════════════════════════════════════════\nVoucher Notification Text Tool\n══════════════════════════════════════════════════════\nv0.7 (developed by: FEL-89242)\nDefault output location: Desktop\n══════════════════════════════════════════════════════\n")
 
 def restart_msg():
     os.system("cls" if os.name == "nt" else "clear")
@@ -55,6 +55,7 @@ def get_validity_dates():
     end = format_date(pick_date("Validity Ends:"))
     return start, end
 
+
 #### Build notification text segments
 def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
     segments = []
@@ -66,17 +67,17 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
             return f"{order}\u00A0\u00A0\u00A0{contact}"
         return line\
     
-    #0.1 Split date into two segmenst (e.g. 20 january --> ["20", "January"])
+    # Split date into two segmenst (e.g. 20 january --> ["20", "January"])
     start_a = start.split()[0].lstrip("0")
     start_b = start.split()[1].lstrip("0")
     end_a = end.split()[0].lstrip("0")
     end_b = end.split()[1].lstrip("0")
-    #0.2 prepare start day extension
+    # prepare start day extension
     if start_a in ("1", "31", "21"): start_date = f"{start_a}st {start_b}"
     elif start_a in ("2", "22"): start_date = f"{start_a}nd {start_b}"
     elif start_a in ("3", "23"): start_date = f"{start_a}rd {start_b}"
     else: start_date = f"{start_a}th {start_b}"
-    #0.3 prepare end day extension
+    # prepare end day extension
     if end_a in ("1", "31", "21"): end_date = f"{end_a}st {end_b}"
     elif end_a in ("2", "22") : end_date = f"{end_a}nd {end_b}"
     elif end_a in ("3", "23"): end_date = f"{end_a}rd {end_b}"
@@ -101,6 +102,7 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
         segments.append("\n".join(lines))
     return segments
 
+
 #### Input Data Function
 def read_input_data() -> pd.DataFrame:
     while True:
@@ -116,7 +118,7 @@ def read_input_data() -> pd.DataFrame:
 
         raw = "\n".join(lines).strip()
         if not raw:
-            print("🛑 ERROR! No data found!\n")
+            print("🛑 No data found! The user did not provide any data!\n")
             
             try:
                 choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
@@ -161,6 +163,22 @@ def read_input_data() -> pd.DataFrame:
 
 #### Main Program
 boot_msg()
+
+choice = input("🟢 Set Voucher Session (M for Morning or E for Evening) : ").strip().lower()
+if choice == "m" :
+    user_session = "Morning"
+    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+
+elif choice == "e" :
+    user_session = "Evening"
+    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+
+else: 
+    user_session = "Default (Evening)"
+    print(f"\n:::::: Voucher Session is set to '{user_session}'\n")
+
+print("Paste data below (with headers) & press 'Enter' twice:\n══════════════════════════════════════════════════════\n")
+
 def main():
     while True:
         df = read_input_data()
@@ -206,12 +224,12 @@ def main():
                 print(f"{row['Order No']} 0{row['Contact']} {int(row['Voucher'])}")
             
             try:
-                choice = input("\n🔘 Type and enter '𝐂' to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip().lower()
+                choice = input("\n🔘 Type '𝐂' press ENTER to continue \n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip().lower()
             except EOFError:
-                print("\n👋 Window closed. Exiting tool...")
+                print("\nWindow closed. Exiting tool...")
                 exit()
             if choice == "c":
-                print("\n ✌ Allowed duplicates...")
+                print("\n:::::: Allowed duplicates...")
             elif choice == "":
                 restart_msg()
                 continue
@@ -236,11 +254,12 @@ def main():
 
     # Build segments
     segments = build_segments(df, start_date, end_date)
-    final_text = f"Need to send notification for the coupon list below:\n\n{'\n'.join(segments)}"
+    session_info = f"Voucher Session: {user_session}, Date: {start_date}\n\n"
+    final_text = f"{session_info}\n\nNeed to send notification for the coupon list below:\n\n{'\n'.join(segments)}"
 
     # Export as Notepad text file
     output_folder = os.path.join(os.path.expanduser("~"), "Desktop")
-    file_name = f"Coupons_notification_{start_date.replace(' ', '_')}_to_{end_date.replace(' ', '_')}.txt"
+    file_name = f"{user_session} {start_date} to {end_date}.txt"
     output_path = os.path.join(output_folder, file_name)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_text)
