@@ -91,9 +91,9 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
             for _, row in group.iterrows()
         ]
         lines = [
-            f"{serial}. {code_str}",
+            f"{serial}. {code_str}\n",
             *order_contact_lines,
-            f"Use coupon {code_str} to get {int(amount)} taka off",
+            f"\nUse coupon {code_str} to get {int(amount)} taka off",
             f"Minimum order: {mov} taka",
             f"Validity: {start_date} to {end_date}",
             "Not applicable for Flat discount-providing restaurants\n",
@@ -119,7 +119,7 @@ def read_input_data() -> pd.DataFrame:
             print("🛑 ERROR! No data found!\n")
             
             try:
-                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
+                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
@@ -140,9 +140,9 @@ def read_input_data() -> pd.DataFrame:
         else:
             print("🛑 ERROR! Headers not found!\n")
             try:
-                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
+                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
             except EOFError:
-                print("\n👋 Window closed. Exiting tool...")
+                print("\nWindow closed. Exiting tool...")
                 exit()
             if choice == "":
                 restart_msg()
@@ -167,7 +167,7 @@ def main():
         if df is None:
             
             try:
-                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
+                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
@@ -186,7 +186,7 @@ def main():
                 print(f"{row['Order No']}  0{row['Contact']}  {row['Voucher']}")
             
             try:
-                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
+                choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
             except EOFError:
                 print("\n👋 Window closed. Exiting tool...")
                 exit()
@@ -251,7 +251,7 @@ def main():
 
     while True:
         try:
-            choice = input("\n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit ").strip()
+            choice = input("\n\n🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
         except EOFError:
             print("\n👋 Window closed. Exiting tool...")
             exit()

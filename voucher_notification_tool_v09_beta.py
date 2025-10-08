@@ -69,57 +69,79 @@ def parse_data():
     sheet_id = "1oHZKJaLpJdbyuOd9A5RPd0tFw6sPq3tY28euOEX5urg"
     gid = "0"
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
-    df = pd.read_csv(url)
+    
+    try:
+        df = pd.read_csv(url)
+    except Exception as e:
+        print(f"🛑 Failed to fetch Google Sheet: {e}")
+        return None
 
-    # Get date column
+    # Assume first column is date
     date_col = df.columns[0]
     df[date_col] = pd.to_datetime(df[date_col], errors="coerce", dayfirst=True)
 
-    print("🔘 Select a valid date to filter by (from the pop-up calendar)\n\n")
+    print("🔘 Select a valid date to filter by (from the pop-up calendar)\n")
+
     while True:
-        # Pick date from calendar
         filter_by = pick_date()
         try:
             user_date = datetime.datetime.strptime(filter_by, "%d/%m/%Y").date()
         except ValueError:
             print("🛑 Invalid date selected!\n")
-
-            choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
+            choice = input("🔘 Press ENTER ⏎ to Restart / Close window to Exit\n").strip()
             if choice == "":
                 continue
             else:
                 exit()
 
-        # Filter by day/month only
-        filtered_df = df[df[date_col].apply(lambda x: (x.day, x.month)) == (user_date.day, user_date.month)]
+        # Filter by day and month only
+        filtered_df = df[df[date_col].apply(lambda x: (x.day, x.month) if pd.notnull(x) else (0,0)) == (user_date.day, user_date.month)]
 
         if filtered_df.empty:
             print(f"🛑 No matching records found for '{user_date.strftime('%d %B')}'\n")
-            
-            choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
+            choice = input("🔘 Press ENTER ⏎ to Restart / Close window to Exit\n").strip()
             if choice == "":
                 select_date_msg()
                 continue
             else:
                 exit()
 
-        # Check for already given vouchers
+        # Handle 'Voucher Given' column
         if "Voucher Given" in filtered_df.columns:
-            voucher_filtered = filtered_df[~filtered_df["Voucher Given"].astype(str).str.strip().str.lower().isin(["yes", "withdrawn"])]
-            
+            # Clean the column first
+            col = (
+                filtered_df["Voucher Given"]
+                .astype(str)
+                .str.replace("\u00A0", "", regex=False)
+                .str.replace("\ufeff", "", regex=False)
+                .str.strip()
+                .str.lower()
+            )
+
+            # Fill every cell with "no" if it is not "yes" or "withdrawn"
+            col = col.apply(lambda x: x if x in ["yes", "withdrawn"] else "no")
+
+            # Assign back the cleaned column to the DataFrame
+            filtered_df["Voucher Given"] = col
+
+            # Now filter out rows where voucher is "yes" or "withdrawn"
+            voucher_filtered = filtered_df[~col.isin(["yes", "withdrawn"])]
+
+            print("🧩 Cleaned 'Voucher Given' unique values:", col.unique())
+            print(f"✅ Rows kept for {user_date.strftime('%d %B')}: {len(voucher_filtered)}")
+
             if voucher_filtered.empty:
-                    print(f"🛑 All vouchers have already been issued for '{user_date.strftime('%d %B')}'\n")
-                    
-                    choice = input("🔘 Press ENTER ⏎ to Restart \n\n🔘 Close window to Exit\n\n").strip()
-                    if choice == "":
-                        select_date_msg()
-                        continue
-                    else:
-                        exit()
+                print(f"🛑 All vouchers have already been issued for '{user_date.strftime('%d %B')}'\n")
+                choice = input("🔘 Press ENTER ⏎ to Restart / Close window to Exit\n").strip()
+                if choice == "":
+                    select_date_msg()
+                    continue
+                else:
+                    exit()
 
-            return voucher_filtered  # valid data exists
+            return voucher_filtered
 
-        return filtered_df  # valid data exists, no Voucher Given column
+        return filtered_df
 
 
 #### Build notification text segments
