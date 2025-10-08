@@ -73,7 +73,7 @@ def parse_data():
     try:
         df = pd.read_csv(url)
     except Exception as e:
-        print(f"🛑 Failed to fetch Google Sheet: {e}")
+        print(f"🛑 Failed to fetch dtat from Google Sheet: {e}")
         return None
 
     # Assume first column is date
