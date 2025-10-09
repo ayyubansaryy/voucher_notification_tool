@@ -2,3 +2,7 @@ voucher_notification_tool_v09_beta.exe
 voucher_notification_tool_v09_beta.py
 ztest.py
 voucher_notification_tool_v08_gui.py
+voucher_notification_tool_v08.spec
+voucher_notification_tool_v09.spec
+
+/build
