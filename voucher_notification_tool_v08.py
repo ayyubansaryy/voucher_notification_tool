@@ -37,14 +37,12 @@ def closing():
 # --------------------------- Helpers --------------------------- #
 
 def format_date(date_input: str) -> str:
-    """Format DD/MM/YYYY → '10 October'."""
     try:
         return datetime.datetime.strptime(date_input, "%d/%m/%Y").strftime("%d %B")
     except ValueError:
         return date_input
 
 def restart_or_exit():
-    """Prompt user to restart or exit."""
     try:
         choice = input("\n🔘 press ENTER to Restart \n\n🔘 close window to EXIT\n\n").strip()
     except EOFError:
@@ -303,10 +301,10 @@ def main():
                 restart_msg()
                 continue
             else:
-                print("\n:::::: Continuing...")
+                print(":::::: Duplicates allowed\n")
 
         # Validity message
-        print("\n🔘 Set validity from the pop-up calendar...")
+        print("\n🔘 Set validity from the pop-up calendar...\n")
 
         # Fix contact number (add "0" before each one)
         df["Contact"] = df["Contact"].apply(lambda x: x if len(x) != 10 else "0" + x)
