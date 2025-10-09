@@ -103,6 +103,8 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
             for _, row in group.iterrows()
         ]
         lines = [
+            f"Voucher Session: {user_session}, Date: {start_date}\n\n",
+            f"Need to send notification for the coupon list below:\n",
             f"{serial}. {code_str}\n",
             *order_contact_lines,
             f"\nUse coupon {code_str} to get {int(amount)} taka off",
@@ -265,15 +267,15 @@ def main():
 
     # Build segments
     segments = build_segments(df, start_date, end_date)
-    session_info = f"Voucher Session: {user_session}, Date: {start_date}\n\n"
-    final_text = f"{session_info}\n\nNeed to send notification for the coupon list below:\n\n{'\n'.join(segments)}"
+    # session_info = f"Voucher Session: {user_session}, Date: {start_date}\n\n"
+    # final_text = f"{session_info}\n\nNeed to send notification for the coupon list below:\n\n{'\n'.join(segments)}"
 
     # Export as Notepad text file
     output_folder = os.path.join(os.path.expanduser("~"), "Desktop")
     file_name = f"{user_session} {start_date} to {end_date}.txt"
     output_path = os.path.join(output_folder, file_name)
     with open(output_path, "w", encoding="utf-8") as f:
-        f.write(final_text)
+        f.write(segments)
 
     # Successfull file generation reminder
     print("\n:::::: ✨  Notepad text file generated  ╰┈➤  📁", output_path)
