@@ -281,7 +281,7 @@ class App(ctk.CTk):
 
             self.processed_df = df # Store for final generation
             self.tab_view.set("Step 2: Preview & Generate")
-            self.update_status("✅ Preview generated. Please review the data.", "green")
+            self.update_status("✅ Preview generated. Please review the data.", "white")
 
         except Exception as e:
             self.update_status(f"Error parsing data: {e}", "yellow")
@@ -318,7 +318,7 @@ class App(ctk.CTk):
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(f"Need to send notification for the coupon list below:\n\n{'\n\n'.join(segments)}")
 
-            self.update_status(f"✨ Notepad text file generated  ╰┈➤  📁 {output_path}", "green")
+            self.update_status(f"✨ Notepad text file generated  ╰┈➤  📁 {output_path}", "white")
             
             if os.name == 'nt':
                 os.startfile(output_path)
