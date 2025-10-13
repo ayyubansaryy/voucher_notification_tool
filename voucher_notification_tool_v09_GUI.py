@@ -83,7 +83,7 @@ class App(ctk.CTk):
         self.STATUS_FONT_SIZE = 14   # Increased for warnings
 
         # --- Window Configuration ---
-        self.title("Voucher Notification Tool v3.0 (Modern)")
+        self.title("Voucher Notification Tool v0.9 (GUI)")
         self.geometry("800x850")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
