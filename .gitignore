@@ -1,6 +1,5 @@
-voucher_notification_tool_v095_beta.exe
-voucher_notification_tool_v095_beta.py
+voucher_notification_tool_v09_beta.exe
+voucher_notification_tool_v09_beta.py
 ztest.py
-.gitignore
-
+voucher_notification_tool_v10_GUI.spec
 /build
