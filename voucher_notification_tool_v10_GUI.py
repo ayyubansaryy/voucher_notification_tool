@@ -69,7 +69,7 @@ class App(ctk.CTk):
         super().__init__()
 
         # Locate icon file
-        self.ICON_FILE = "app_icon.ico"
+        self.ICON_FILE = "logo.ico"
         version = "(v1.0 - GUI)"
 
         # Font Sizes and Professional Font Selection
