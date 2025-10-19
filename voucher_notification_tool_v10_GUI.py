@@ -1,10 +1,10 @@
-# Compilation command: pyinstaller --onefile --windowed --distpath . "voucher_notification_tool_v10_GUI.py"
+# pyinstaller --onefile --windowed --distpath . "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v10_GUI.py"
+# pyinstaller --windowed --distpath . --exclude-module scipy --exclude-module unittest "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v10_GUI.py"
 
 import os
 import re
-import tkinter as tk
 from io import StringIO
-import datetime
+from datetime import datetime
 import pandas as pd
 from tabulate import tabulate
 from tkcalendar import Calendar
