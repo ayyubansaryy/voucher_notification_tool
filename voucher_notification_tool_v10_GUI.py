@@ -112,7 +112,7 @@ class App(ctk.CTk):
             segmented_button_unselected_color="gray30", 
             fg_color="transparent" 
         )
-        self.tab_view.grid(row=1, column=0, padx=15, pady=(0, 0), sticky="nsew") 
+        self.tab_view.grid(row=1, column=0, padx=20, pady=0, sticky="nsew") 
         
         self.input_tab = self.tab_view.add("Step 1: Input Data")
         self.preview_tab = self.tab_view.add("Step 2: Preview & Generate")
@@ -144,10 +144,10 @@ class App(ctk.CTk):
         self.date_buttons_frame.grid(row=1, column=1, padx=20, pady=(0, 20), sticky="ew")
         self.date_buttons_frame.grid_columnconfigure((0, 1), weight=1)
         
-        self.start_date_button = ctk.CTkButton(self.date_buttons_frame, text="Select start date", command=self.pick_start_date, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE))
+        self.start_date_button = ctk.CTkButton(self.date_buttons_frame, text="Select start date", command=self.pick_start_date, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE), hover_color="#21547A",fg_color="#26618F")
         self.start_date_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
         
-        self.end_date_button = ctk.CTkButton(self.date_buttons_frame, text="Select end date", command=self.pick_end_date, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE))
+        self.end_date_button = ctk.CTkButton(self.date_buttons_frame, text="Select end date", command=self.pick_end_date, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE), hover_color="#21547A",fg_color="#26618F")
         self.end_date_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         # Input Label and Clear Button Frame
@@ -155,23 +155,23 @@ class App(ctk.CTk):
         self.input_header_frame.grid(row=1, column=0, padx=0, pady=(10, 5), sticky="ew")
         self.input_header_frame.grid_columnconfigure(0, weight=1)
         
-        self.input_label = ctk.CTkLabel(self.input_header_frame, text="Paste Data Below (with headers)", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"))
-        self.input_label.grid(row=0, column=0, sticky="w")
+        self.input_label = ctk.CTkLabel(self.input_header_frame, text="# Paste data below with headers", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"))
+        self.input_label.grid(row=0, column=0, sticky="w", padx=(20, 0))
         
-        self.clear_button = ctk.CTkButton(self.input_header_frame, text="Clear Data", width=100, command=self.clear_all_data, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE))
-        self.clear_button.grid(row=0, column=1, sticky="e")
+        self.clear_button = ctk.CTkButton(self.input_header_frame, text="Clear Data", width=100, command=self.clear_all_data, font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE), hover_color='#8B0000', fg_color="#A80000")
+        self.clear_button.grid(row=0, column=1, sticky="e", padx=(0, 20))
 
         self.input_textbox = ctk.CTkTextbox(self.input_tab, height=300, font=(self.MONOSPACE_FAMILY, self.TEXTBOX_FONT_SIZE))
         self.input_textbox.grid(row=2, column=0, padx=0, pady=5, sticky="nsew")
         
-        self.preview_button = ctk.CTkButton(self.input_tab, text="Preview Data ➡️", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"), height=40, command=self.show_preview)
+        self.preview_button = ctk.CTkButton(self.input_tab, text="Preview Data", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"), height=40, hover_color="#21547A",fg_color="#26618F", command=self.show_preview)
         self.preview_button.grid(row=3, column=0, padx=0, pady=20, sticky="ew")
 
         # Widgets for Preview Tab
         self.preview_textbox = ctk.CTkTextbox(self.preview_tab, font=(self.MONOSPACE_FAMILY, self.TEXTBOX_FONT_SIZE), state="disabled")
         self.preview_textbox.grid(row=0, column=0, padx=0, pady=10, sticky="nsew")
 
-        self.generate_button = ctk.CTkButton(self.preview_tab, text="Generate Notification File ➡️", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"), height=40, command=self.generate_file)
+        self.generate_button = ctk.CTkButton(self.preview_tab, text="Generate Notification File", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.HEADER_FONT_SIZE, weight="bold"), height=40, hover_color="#21547A",fg_color="#26618F", command=self.generate_file)
         self.generate_button.grid(row=1, column=0, padx=0, pady=(10, 18), sticky="ew")
         
         # Status Bar
@@ -195,8 +195,8 @@ class App(ctk.CTk):
         cal = Calendar(dialog, selectmode="day", date_pattern="dd/mm/yyyy", font=(self.FONT_FAMILY, 14))
         cal.pack(pady=0, padx=0, fill="both", expand=True)
         
-        confirm_button = ctk.CTkButton(dialog, text="OK", command=lambda: on_date_select(cal.get_date()), font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE))
-        confirm_button.pack(pady=10)
+        ok_button = ctk.CTkButton(dialog, text="OK", command=lambda: on_date_select(cal.get_date()), font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.BUTTON_FONT_SIZE), hover_color="#21547A",fg_color="#26618F")
+        ok_button.pack(pady=10)
         self.wait_window(dialog)
         return selected_date
 
@@ -232,18 +232,18 @@ class App(ctk.CTk):
         self.processed_df = None
 
         if not self.start_date or not self.end_date:
-            self.update_status("Error: Please select both a start and end date.", "yellow")
+            self.update_status("(ERROR) Please select both a start and end date.", "yellow")
             return
 
         raw_data = self.input_textbox.get("1.0", "end-1c").strip()
         if not raw_data:
-            self.update_status("Error: Input data cannot be empty.", "yellow")
+            self.update_status("(ERROR) Input data cannot be empty.", "yellow")
             return
 
         try:
             first_line = raw_data.splitlines()[0].strip().lower()
             if not any(k in first_line for k in ["order no", "contact", "voucher"]):
-                self.update_status("Error: Headers not found in the first line.", "yellow")
+                self.update_status("(ERROR) Headers not found in the first line.", "yellow")
                 return
 
             # Parse TAB separated texts
@@ -298,7 +298,7 @@ class App(ctk.CTk):
             valid_df = df[~invalid_voucher_mask & ~missing_order_mask].copy()
 
             if valid_df.empty:
-                self.update_status("Error: No valid entries found.", "yellow")
+                self.update_status("(ERROR) No valid entries found.", "yellow")
                 return
 
             summary_parts = []
@@ -355,16 +355,16 @@ class App(ctk.CTk):
 
     def generate_file(self):
         if self.processed_df is None or self.processed_df.empty:
-            self.update_status("Error: No valid data to process. Please go back to Step 1.", "yellow")
+            self.update_status("(ERROR) No valid data to process. Please go back to Step 1.", "yellow")
             return
 
         df = self.processed_df.copy()
 
         if df["Voucher"].isnull().any():
-            self.update_status("Error: One or more rows have a missing/invalid 'Voucher' amount.", "yellow")
+            self.update_status("(ERROR) One or more rows have a missing/invalid 'Voucher' amount.", "yellow")
             return
         if df["Order No"].isnull().any() or (df["Order No"] == "").any():
-            self.update_status("Error: One or more rows have a missing 'Order No'.", "yellow")
+            self.update_status("(ERROR) One or more rows have a missing 'Order No'.", "yellow")
             return
         if df.duplicated(subset=["Contact"]).any():
             self.update_status("! Warning: Duplicate contacts found. Processing anyway.", "orange")
@@ -384,7 +384,7 @@ class App(ctk.CTk):
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(f"Need to send notification for the coupon list below:\n\n{'\n\n'.join(segments)}")
 
-            self.update_status(f"✨ Text file generated  ┈┈➤  📁 {output_path}", "white")
+            self.update_status(f"✨ Text file generated  ┈┈➤  📁 {output_path}", "#4CBB17")
             
             if os.name == 'nt':
                 os.startfile(output_path)
