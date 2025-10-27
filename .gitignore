@@ -1,9 +1,8 @@
 voucher_notification_tool_v09_beta.exe
 voucher_notification_tool_v09_beta.py
-voucher_notification_tool_v09_GUI_deprecated.exe
-voucher_notification_tool_v09_GUI_deprecated.py
 ztest.py
 voucher_notification_tool_v10_GUI.spec
+voucher_notification_tool_v10_GUI_portable
 
 /build
 /backup
