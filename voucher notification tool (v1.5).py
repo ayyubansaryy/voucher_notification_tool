@@ -70,7 +70,7 @@ class App(ctk.CTk):
 
         # Locate icon file
         self.ICON_FILE = "logo.ico"
-        version = "(v1.0 - GUI)"
+        version = "(V1.5)"
 
         # Font Sizes and Professional Font Selection
         self.FONT_FAMILY = "Segoe UI" 
