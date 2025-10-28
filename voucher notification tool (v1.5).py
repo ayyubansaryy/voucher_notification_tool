@@ -1,5 +1,5 @@
-# pyinstaller --onefile --windowed --distpath . --exclude-module scipy --exclude-module unittest --name voucher_notification_tool_v10_GUI_portable "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v10_GUI.py"
-# pyinstaller --windowed --distpath . --exclude-module scipy --exclude-module unittest --name voucher_notification_tool_v10_GUI_portable "F:\__Practice\Python\voucher_notification_tool\voucher_notification_tool_v10_GUI.py"
+# pyinstaller --onefile --windowed --distpath . --exclude-module scipy --exclude-module unittest "F:\__Practice\Python\voucher_notification_tool\voucher notification tool (v1.5).py"
+# pyinstaller --windowed --distpath . --exclude-module scipy --exclude-module unittest --name voucher_notification_tool_v10_GUI_portable "F:\__Practice\Python\voucher_notification_tool\voucher notification tool (v1.5).py"
 
 import os
 import re
@@ -18,6 +18,9 @@ def format_date(date_input: str) -> str:
 
 def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
     segments = []
+
+    # Change Voucher column to numeric to maintain numeric order in the final text
+    df["Voucher"] = pd.to_numeric(df["Voucher"], errors="coerce")
     
     def format_order_contact(line: str) -> str:
         match = re.match(r"(\w+)\s*(\d+)", line)
@@ -58,11 +61,14 @@ def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
             f"Use coupon {code_str} to get {int(amount)} taka off",
             f"Minimum order: {mov} taka",
             f"Validity: {start_date_str} to {end_date_str}",
-            "Not applicable for Flat discount-providing restaurants\n",
+            "Not applicable for Flat discount-providing restaurants",
         ]
         segments.append("\n".join(lines))
     return segments
 
+
+# Set customer colors (Global)
+error_color = "#EE4B2B"
 
 class App(ctk.CTk):
     def __init__(self):
@@ -70,6 +76,8 @@ class App(ctk.CTk):
 
         # Locate icon file
         self.ICON_FILE = "logo.ico"
+
+        # Set version
         version = "(V1.5)"
 
         # Font Sizes and Professional Font Selection
@@ -83,7 +91,7 @@ class App(ctk.CTk):
 
         # Window Configuration
         self.title(f"Voucher Notification Tool {version}")
-        self.geometry("725x650")
+        self.geometry("725x500")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         ctk.set_appearance_mode("System")
@@ -100,10 +108,9 @@ class App(ctk.CTk):
         self.end_date = None
         self.processed_df = None 
 
-        # ... (rest of the __init__ method is unchanged) ...
-        # Widgets
-        self.title_label = ctk.CTkLabel(self, text="Voucher Notification Tool", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.TITLE_FONT_SIZE, weight="bold"))
-        self.title_label.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="ew")
+        # # Title widget
+        # self.title_label = ctk.CTkLabel(self, text="Welcome! ", font=ctk.CTkFont(family=self.FONT_FAMILY, size=self.TITLE_FONT_SIZE, weight="bold"))
+        # self.title_label.grid(row=0, column=0, padx=27, pady=(20, 20), sticky="ew")
         
         # Tab View for Step-by-Step process
         self.tab_view = ctk.CTkTabview(
@@ -215,7 +222,7 @@ class App(ctk.CTk):
             self.update_status("End date selected.", "gray60")
 
     def update_status(self, message, color):
-        self.status_label.configure(text=message, text_color=color)
+        self.status_label.configure(text=message, text_color=color, font=("Segoe UI", 14, "bold"))
 
     def clear_all_data(self):
         self.input_textbox.delete("1.0", "end")
@@ -232,22 +239,27 @@ class App(ctk.CTk):
         self.processed_df = None
 
         if not self.start_date or not self.end_date:
-            self.update_status("(ERROR) Please select both a start and end date.", "yellow")
+            self.update_status("(ERROR) Please select both a start and end date.", error_color)
             return
 
         raw_data = self.input_textbox.get("1.0", "end-1c").strip()
         if not raw_data:
-            self.update_status("(ERROR) Input data cannot be empty.", "yellow")
+            self.update_status("(ERROR) Input data cannot be empty.", error_color)
             return
 
         try:
             first_line = raw_data.splitlines()[0].strip().lower()
             if not any(k in first_line for k in ["order no", "contact", "voucher"]):
-                self.update_status("(ERROR) Headers not found in the first line.", "yellow")
+                self.update_status("(ERROR) Headers not found in the first line.", error_color)
                 return
 
             # Parse TAB separated texts
-            df = pd.read_csv(StringIO(raw_data), sep="\t", dtype=str)
+            dtype_mapping = {
+                "Order No": str, 
+                "Contact": str,
+                "Voucher": str
+            }
+            df = pd.read_csv(StringIO(raw_data), sep="\t", dtype=dtype_mapping)
 
             # Remove withdrawn or already given vouchers
             if "Voucher Given" in df.columns:
@@ -261,30 +273,34 @@ class App(ctk.CTk):
             df = df[~(df["Order No"].isna() & df["Voucher"].isna())]
             df = df[~((df["Order No"].astype(str).str.strip() == "") & (df["Voucher"].astype(str).str.strip() == ""))]
 
-            # Convert Voucher column to numeric
-            df["Voucher"] = pd.to_numeric(df["Voucher"], errors="coerce")
-
             # Identify invalids
-            invalid_voucher_mask = df["Voucher"].isnull()
+            missing_voucher_mask = df["Voucher"].isnull()
             missing_order_mask = df["Order No"].isnull() | (df["Order No"].astype(str).str.strip() == "")
+            missing_contact_mask = df["Contact"].isnull() | (df["Contact"].astype(str).str.strip() == "")
             duplicate_mask = df.duplicated(subset=["Contact"], keep=False)
 
-            invalid_voucher_count = invalid_voucher_mask.sum()
+            missing_voucher_count = missing_voucher_mask.sum()
             missing_order_count = missing_order_mask.sum()
+            missing_contact_count = missing_contact_mask.sum()
             duplicate_count = duplicate_mask.sum()
 
             # Build Invalid DataFrames for Each Error Type
             invalid_groups = {}
 
-            if invalid_voucher_count > 0:
-                invalid_voucher_df = df.loc[invalid_voucher_mask].copy()
-                invalid_voucher_df["Reason"] = "Invalid Voucher"
-                invalid_groups["Voucher Invalid"] = invalid_voucher_df
+            if missing_voucher_count > 0:
+                invalid_voucher_df = df.loc[missing_voucher_mask].copy()
+                invalid_voucher_df["Reason"] = "Voucher Missing"
+                invalid_groups["Voucher Missing"] = invalid_voucher_df
 
             if missing_order_count > 0:
                 missing_order_df = df.loc[missing_order_mask].copy()
-                missing_order_df["Reason"] = "Missing Order ID"
+                missing_order_df["Reason"] = "Order ID Missing"
                 invalid_groups["Order ID Missing"] = missing_order_df
+
+            if missing_contact_count > 0:
+                missing_contact_df = df.loc[missing_contact_mask].copy()
+                missing_contact_df["Reason"] = "Contact Missing"
+                invalid_groups["Contact Missing"] = missing_contact_df
 
             if duplicate_count > 0:
                 duplicate_df = df.loc[duplicate_mask].copy()
@@ -293,12 +309,13 @@ class App(ctk.CTk):
 
             # Combine all invalids into one if you still need the full set
             invalid_df = pd.concat(invalid_groups.values(), ignore_index=True) if invalid_groups else pd.DataFrame()
+            # invalid_df["Contact"] = invalid_df["Contact"].astype(str)
 
             # Filter valid entries
-            valid_df = df[~invalid_voucher_mask & ~missing_order_mask].copy()
+            valid_df = df[~missing_voucher_mask & ~missing_order_mask & ~missing_contact_mask].copy()
 
             if valid_df.empty:
-                self.update_status("(ERROR) No valid entries found.", "yellow")
+                self.update_status("(ERROR) No valid entries found.", error_color)
                 return
 
             summary_parts = []
@@ -306,8 +323,9 @@ class App(ctk.CTk):
             summary_data = [
                 ["Total Rows", len(df)],
                 ["Valid Entries", len(valid_df)],
-                ["Invalid Vouchers", invalid_voucher_count],
+                ["Missing Vouchers", missing_voucher_count],
                 ["Missing Order IDs", missing_order_count],
+                ["Missing Contacts", missing_contact_count],
                 ["Duplicate Contacts", duplicate_count],
             ]
             summary_table = tabulate(
@@ -315,12 +333,22 @@ class App(ctk.CTk):
                 tablefmt="fancy_grid",
                 showindex=False,
             )
-            summary_parts.append(f"# Data Summary:\n{summary_table}\n\n")
+            summary_parts.append(f"# Data Summary:\n{summary_table}\n" + "┈➤ ATTENTION: Entries with duplicate contacts are ALLOWED by default.\n\n")
 
-            # Invalid Data Preview (NEW)
+
+            # Invalid Data Preview
             if not invalid_df.empty:
-                invalid_table = tabulate(invalid_df, headers="keys", tablefmt="fancy_grid", showindex=False)
-                summary_parts.append(f"⚠️ Invalid Data Preview:\n{invalid_table}\n\n┈┈➤ ATTENTION: Entries with duplicate contacts are ALLOWED by default.\n\n")
+                invalid_df["Contact"] = invalid_df["Contact"].fillna("").astype(str)
+                invalid_df["Voucher"] = invalid_df["Voucher"].fillna("").astype(str)
+                invalid_df["Order No"] = invalid_df["Order No"].fillna("").astype(str)
+
+                invalid_table = tabulate(
+                    invalid_df, 
+                    headers="keys", 
+                    tablefmt="fancy_grid", 
+                    showindex=False,
+                )
+                summary_parts.append(f"⚠️ Invalid Data Preview:\n{invalid_table}\n\n")
 
             # Voucher Distribution
             if "Voucher" in valid_df.columns and not valid_df["Voucher"].isnull().all():
@@ -350,21 +378,21 @@ class App(ctk.CTk):
             self.update_status("✅ Preview generated with validation summary.", "white")
 
         except Exception as e:
-            self.update_status(f"Error parsing data: {e}", "yellow")
+            self.update_status(f"Error parsing data: {e}", error_color)
 
 
     def generate_file(self):
         if self.processed_df is None or self.processed_df.empty:
-            self.update_status("(ERROR) No valid data to process. Please go back to Step 1.", "yellow")
+            self.update_status("(ERROR) No valid data to process. Please go back to Step 1.", error_color)
             return
 
         df = self.processed_df.copy()
 
         if df["Voucher"].isnull().any():
-            self.update_status("(ERROR) One or more rows have a missing/invalid 'Voucher' amount.", "yellow")
+            self.update_status("(ERROR) One or more rows have a missing/invalid 'Voucher' amount.", error_color)
             return
         if df["Order No"].isnull().any() or (df["Order No"] == "").any():
-            self.update_status("(ERROR) One or more rows have a missing 'Order No'.", "yellow")
+            self.update_status("(ERROR) One or more rows have a missing 'Order No'.", error_color)
             return
         if df.duplicated(subset=["Contact"]).any():
             self.update_status("! Warning: Duplicate contacts found. Processing anyway.", "orange")
@@ -384,13 +412,13 @@ class App(ctk.CTk):
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(f"Need to send notification for the coupon list below:\n\n{'\n\n'.join(segments)}")
 
-            self.update_status(f"✨ Text file generated  ┈┈➤  📁 {output_path}", "#4CBB17")
+            self.update_status(f"✨ File generated ┈➤ 📁 {output_path}", "#35A800")
             
             if os.name == 'nt':
                 os.startfile(output_path)
 
         except Exception as e:
-            self.update_status(f"Error generating file: {e}", "yellow")
+            self.update_status(f"Error generating file: {e}", error_color)
 
 if __name__ == "__main__":
     app = App()
