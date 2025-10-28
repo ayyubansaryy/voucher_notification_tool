@@ -307,9 +307,8 @@ class App(ctk.CTk):
                 duplicate_df["Reason"] = "Duplicate Contact"
                 invalid_groups["Duplicate Contact"] = duplicate_df
 
-            # Combine all invalids into one if you still need the full set
+            # Combine all invalids into one
             invalid_df = pd.concat(invalid_groups.values(), ignore_index=True) if invalid_groups else pd.DataFrame()
-            # invalid_df["Contact"] = invalid_df["Contact"].astype(str)
 
             # Filter valid entries
             valid_df = df[~missing_voucher_mask & ~missing_order_mask & ~missing_contact_mask].copy()
