@@ -1,8 +1,9 @@
 # pyinstaller --onefile --windowed --distpath . --exclude-module scipy --exclude-module unittest "F:\__Practice\Python\voucher_notification_tool\voucher notification tool (v1.5).py"
-# pyinstaller --windowed --distpath . --exclude-module scipy --exclude-module unittest --name voucher_notification_tool_v10_GUI_portable "F:\__Practice\Python\voucher_notification_tool\voucher notification tool (v1.5).py"
+# pyinstaller --windowed --distpath . --exclude-module scipy --exclude-module unittest --add-data "logo.ico;." --icon "logo.ico" "F:\__Practice\Python\voucher_notification_tool\voucher notification tool (v1.5).py"
 
 import os
 import re
+import sys
 from io import StringIO
 from datetime import datetime
 import pandas as pd
@@ -10,11 +11,22 @@ from tabulate import tabulate
 from tkcalendar import Calendar
 import customtkinter as ctk
 
+def resource_path(relative_path):
+    try:
+        # Creates a temporary folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 def format_date(date_input: str) -> str:
     try:
         return datetime.strptime(date_input, "%d/%m/%Y").strftime("%d %B")
     except (ValueError, TypeError):
         return None
+
 
 def build_segments(df: pd.DataFrame, start: str, end: str) -> list[str]:
     segments = []
@@ -75,7 +87,7 @@ class App(ctk.CTk):
         super().__init__()
 
         # Locate icon file
-        self.ICON_FILE = "logo.ico"
+        self.ICON_FILE = resource_path("logo.ico")
 
         # Set version
         version = "(V1.5)"
